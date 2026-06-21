@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 const FROM = process.env.RESEND_FROM ?? 'TaxOS <onboarding@resend.dev>'
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL!
 
 export async function POST(req: NextRequest) {
-  if (!process.env.RESEND_API_KEY) {
+  if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'placeholder') {
     return NextResponse.json({ ok: false, error: 'Email not configured' }, { status: 200 })
   }
+  const resend = new Resend(process.env.RESEND_API_KEY)
 
   const { to, subject, html } = await req.json()
 

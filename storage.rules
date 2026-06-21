@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Client documents: clients/{clientId}/documents/{filename}
+    match /clients/{clientId}/documents/{filename} {
+      // Admin (email user) can read/write all
+      allow read, write: if request.auth != null && request.auth.token.email != null;
+
+      // Client can upload to their own folder (matched by phone)
+      allow read, write: if request.auth != null
+        && request.auth.token.phone_number != null
+        && firestore.get(/databases/(default)/documents/clients/$(clientId)).data.phone == request.auth.token.phone_number;
+    }
+
+    // Deny everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

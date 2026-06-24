@@ -12,8 +12,11 @@ import { useToast } from '@/components/ui/Toast'
 import { notifyAdmin } from '@/lib/notifications'
 import { emailAdminDocUploaded } from '@/lib/email'
 
-// Raw Cloudinary URLs (PDFs/docs) open fine as-is; image URLs open inline
-function docViewUrl(url: string): string { return url }
+// Images open inline; PDFs/docs (/raw/upload/) get fl_attachment to force download
+function docViewUrl(url: string): string {
+  if (url.includes('/raw/upload/')) return url.replace('/raw/upload/', '/raw/upload/fl_attachment/')
+  return url
+}
 
 const docTypes: { value: DocumentType; label: string }[] = [
   { value: 'pan',           label: 'PAN Card' },

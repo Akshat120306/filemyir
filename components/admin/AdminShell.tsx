@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, Users, GitBranch, Bell, Search, LogOut, Inbox, X, FileText, MessageSquare, User, Settings, UserPlus, CreditCard, Menu } from 'lucide-react'
 import { APP_VERSION } from '@/lib/version'
+import Logo from '@/components/ui/Logo'
 import { signOut } from '@/lib/auth'
 import { subscribeNotifications, markAllRead } from '@/lib/notifications'
 import { Notification } from '@/types'
@@ -98,11 +99,8 @@ export default function AdminShell({ children, title, subtitle }: { children: Re
       {/* Sidebar — desktop only */}
       <aside className="hidden md:flex w-56 flex-shrink-0 flex-col" style={{ background: '#141E33', borderRight: '1px solid #1F2C42' }}>
         <div className="flex items-center gap-2.5 px-5 py-6">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm" style={{ background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' }}>T</div>
-          <div>
-            <p className="font-semibold text-sm" style={{ color: '#F1F5F9' }}>FilemyITR</p>
-            <p className="text-xs" style={{ color: '#64748B' }}>Admin · v{APP_VERSION}</p>
-          </div>
+          <Logo size={30} />
+          <p className="text-xs ml-1" style={{ color: '#64748B' }}>Admin · v{APP_VERSION}</p>
         </div>
         <NavLinks />
       </aside>
@@ -113,10 +111,7 @@ export default function AdminShell({ children, title, subtitle }: { children: Re
           <div className="absolute inset-0 bg-black/60" onClick={() => setShowDrawer(false)} />
           <aside className="absolute left-0 top-0 bottom-0 w-64 flex flex-col" style={{ background: '#141E33', borderRight: '1px solid #1F2C42' }}>
             <div className="flex items-center justify-between px-5 py-5">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm" style={{ background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' }}>T</div>
-                <p className="font-semibold text-sm" style={{ color: '#F1F5F9' }}>FilemyITR</p>
-              </div>
+              <Logo size={28} />
               <button onClick={() => setShowDrawer(false)} style={{ color: '#64748B' }}><X size={20} /></button>
             </div>
             <NavLinks />

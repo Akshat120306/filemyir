@@ -8,6 +8,7 @@ import { getLeadByEmail } from '@/lib/leads'
 import { getClientByEmail } from '@/lib/clients'
 import { FirebaseError } from 'firebase/app'
 import { Eye, EyeOff, ArrowRight, Mail, CheckCircle } from 'lucide-react'
+import Logo from '@/components/ui/Logo'
 
 function firebaseMsg(err: unknown): string {
   if (!(err instanceof FirebaseError)) return err instanceof Error ? err.message : 'Something went wrong'
@@ -240,10 +241,8 @@ export default function ClientLoginPage() {
       <div className="w-full max-w-sm">
 
         {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-8 justify-center">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-white"
-            style={{ background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' }}>T</div>
-          <span className="font-semibold text-lg" style={{ color: '#F1F5F9' }}>FilemyITR</span>
+        <div className="flex justify-center mb-8">
+          <Logo size={36} />
         </div>
 
         <div className="rounded-2xl overflow-hidden" style={{ background: '#1E293B', border: '1px solid #1F2C42' }}>

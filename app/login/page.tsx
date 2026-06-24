@@ -77,7 +77,8 @@ export default function ClientLoginPage() {
     setBusy(true)
     try {
       const signedInUser = await clientSignIn(email, password)
-      if (!signedInUser.emailVerified) {
+      const linkedToGoogle = signedInUser.providerData.some(p => p.providerId === 'google.com')
+      if (!signedInUser.emailVerified && !linkedToGoogle) {
         await signOut()
         setStep('verify_email')
         setError('Please verify your email before signing in. Check your inbox for the verification link.')

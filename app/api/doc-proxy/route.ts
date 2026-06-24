@@ -10,7 +10,10 @@ export async function GET(req: NextRequest) {
   }
 
   const res = await fetch(url)
-  if (!res.ok) return new NextResponse('Failed to fetch file', { status: res.status })
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    return new NextResponse(`Failed to fetch: ${res.status} ${res.statusText} | url: ${url} | ${body}`, { status: res.status })
+  }
 
   const contentType = res.headers.get('content-type') ?? 'application/octet-stream'
   const body = await res.arrayBuffer()

@@ -108,10 +108,15 @@ export default function ClientLoginPage() {
     setBusy(true)
     try {
       // Gate: must have completed assessment
-      const lead = await getLeadByEmail(email)
-      const client = await getClientByEmail(email)
+      let lead, client
+      try {
+        ;[lead, client] = await Promise.all([getLeadByEmail(email), getClientByEmail(email)])
+      } catch {
+        setError('Could not verify your email. Please check your connection and try again.')
+        setBusy(false); return
+      }
       if (!lead && !client) {
-        setError('No assessment found for this email. Please complete the free ITR assessment first.')
+        setError('No ITR assessment found for this email. Please complete the free assessment first.')
         setBusy(false); return
       }
       await clientSignUp(email, password, name.trim())

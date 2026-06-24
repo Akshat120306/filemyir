@@ -50,7 +50,7 @@ function UploadButton({ label, clientId, clientEmail, onDone, existingDoc }: {
     if (!file) return
     setUploading(true)
     try {
-      const url = await uploadToCloudinary(file)
+      const { url, assetId } = await uploadToCloudinary(file)
       const type: DocumentType = label.toLowerCase().includes('pan') ? 'pan'
         : label.toLowerCase().includes('aadhaar') ? 'aadhaar'
         : label.toLowerCase().includes('form 16') ? 'form16'
@@ -58,7 +58,7 @@ function UploadButton({ label, clientId, clientEmail, onDone, existingDoc }: {
         : label.toLowerCase().includes('capital') ? 'capital_gains'
         : label.toLowerCase().includes('bank') ? 'bank_statement'
         : 'other'
-      await addDocument(clientId, { name: label, type, externalUrl: url, storagePath: '', uploadedBy: 'client', reviewStatus: 'pending' })
+      await addDocument(clientId, { name: label, type, externalUrl: url, cloudinaryAssetId: assetId, storagePath: '', uploadedBy: 'client', reviewStatus: 'pending' })
       const uploaderName = user?.displayName ?? clientEmail
       notifyAdmin('📄 Document uploaded', `${uploaderName} uploaded "${label}"`, 'doc_uploaded', clientId).catch(() => {})
       emailAdminDocUploaded(uploaderName, label, clientId).catch(() => {})
@@ -126,8 +126,8 @@ function DocsContent() {
     if (!clientId || !selectedFile) return
     setBusy(true)
     try {
-      const url = await uploadToCloudinary(selectedFile)
-      await addDocument(clientId, { name: docName, type: docType, externalUrl: url, storagePath: '', uploadedBy: 'client', reviewStatus: 'pending' })
+      const { url, assetId } = await uploadToCloudinary(selectedFile)
+      await addDocument(clientId, { name: docName, type: docType, externalUrl: url, cloudinaryAssetId: assetId, storagePath: '', uploadedBy: 'client', reviewStatus: 'pending' })
       const uploaderName2 = user?.displayName ?? user?.email ?? ''
       notifyAdmin('📄 Document uploaded', `${uploaderName2} uploaded "${docName}"`, 'doc_uploaded', clientId).catch(() => {})
       emailAdminDocUploaded(uploaderName2, docName, clientId).catch(() => {})

@@ -70,6 +70,7 @@ export interface ClientDocument {
   type: DocumentType
   storagePath: string
   externalUrl?: string
+  cloudinaryAssetId?: string
   year?: number
   uploadedAt: Date
   uploadedBy: SenderType

@@ -6,8 +6,7 @@ export async function deleteFromCloudinary(url: string): Promise<void> {
   })
 }
 
-export async function uploadToCloudinary(file: File): Promise<string> {
-  // Always use image resource type — publicly accessible, supports PDF/image/doc
+export async function uploadToCloudinary(file: File): Promise<{ url: string; assetId: string }> {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!)
@@ -22,5 +21,5 @@ export async function uploadToCloudinary(file: File): Promise<string> {
     throw new Error(err?.error?.message ?? 'Upload failed')
   }
   const data = await res.json()
-  return data.secure_url as string
+  return { url: data.secure_url as string, assetId: data.asset_id as string }
 }

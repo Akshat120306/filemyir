@@ -43,6 +43,7 @@ export default function ClientLoginPage() {
   const [info, setInfo]         = useState('')
   const [busy, setBusy]         = useState(false)
   const [resent, setResent]     = useState(false)
+  const [unverifiedEmail, setUnverifiedEmail] = useState('')
   // google setup
   const [googleName, setGoogleName]   = useState('')
   const [googlePw, setGooglePw]       = useState('')
@@ -126,6 +127,8 @@ export default function ClientLoginPage() {
         setBusy(false); return
       }
       await clientSignUp(email, password, name.trim())
+      setUnverifiedEmail(email)
+      await signOut() // sign out immediately so useEffect doesn't redirect; user must verify email first
       setStep('verify_email')
     } catch (err: unknown) {
       if (err instanceof FirebaseError && err.code === 'auth/email-already-in-use') {
@@ -159,8 +162,17 @@ export default function ClientLoginPage() {
   // ── Resend verification ───────────────────────────────────────────────────────
   async function handleResend() {
     setBusy(true)
-    try { await resendVerificationEmail(); setResent(true) }
-    catch { setError('Could not resend. Try again.') }
+    try {
+      // Sign in temporarily just to resend, then sign out again
+      if (unverifiedEmail && password) {
+        const tempUser = await clientSignIn(unverifiedEmail, password)
+        await resendVerificationEmail()
+        if (!tempUser.emailVerified) await signOut()
+      } else {
+        await resendVerificationEmail()
+      }
+      setResent(true)
+    } catch { setError('Could not resend. Try again.') }
     finally { setBusy(false) }
   }
 

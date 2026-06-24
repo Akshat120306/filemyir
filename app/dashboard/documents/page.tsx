@@ -12,11 +12,8 @@ import { useToast } from '@/components/ui/Toast'
 import { notifyAdmin } from '@/lib/notifications'
 import { emailAdminDocUploaded } from '@/lib/email'
 
-// Cloudinary blocks inline PDF rendering cross-origin — force download via fl_attachment
-function docViewUrl(url: string): string {
-  if (!url.includes('cloudinary.com')) return url
-  return url.replace('/upload/', '/upload/fl_attachment/')
-}
+// Raw Cloudinary URLs (PDFs/docs) open fine as-is; image URLs open inline
+function docViewUrl(url: string): string { return url }
 
 const docTypes: { value: DocumentType; label: string }[] = [
   { value: 'pan',           label: 'PAN Card' },

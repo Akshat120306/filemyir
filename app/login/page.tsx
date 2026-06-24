@@ -53,11 +53,10 @@ export default function ClientLoginPage() {
   useEffect(() => {
     if (!loading && user) {
       if (isAdmin) { router.replace('/admin'); return }
-      // If user signed in with Google and hasn't done setup yet, show google_setup
       const isGoogle = user.providerData.some(p => p.providerId === 'google.com')
       const hasPassword = user.providerData.some(p => p.providerId === 'password')
-      const isNew = !user.displayName || user.displayName === user.email
-      if (isGoogle && !hasPassword && isNew && !googleSetupDone) {
+      // Google users without a password set → show setup screen once
+      if (isGoogle && !hasPassword && !googleSetupDone) {
         setGoogleName(user.displayName ?? '')
         setStep('google_setup')
         return
@@ -77,7 +76,13 @@ export default function ClientLoginPage() {
     setError(''); setInfo('')
     setBusy(true)
     try {
-      await clientSignIn(email, password)
+      const signedInUser = await clientSignIn(email, password)
+      if (!signedInUser.emailVerified) {
+        await signOut()
+        setStep('verify_email')
+        setError('Please verify your email before signing in. Check your inbox for the verification link.')
+        setBusy(false); return
+      }
       router.replace('/dashboard')
     } catch (err: unknown) {
       const isNotFound = err instanceof FirebaseError &&
@@ -386,7 +391,7 @@ export default function ClientLoginPage() {
                 </p>
                 <p className="text-sm font-medium mb-5" style={{ color: '#F1F5F9' }}>{email}</p>
                 <p className="text-xs mb-6" style={{ color: '#64748B' }}>
-                  Click the link in the email to activate your account, then come back and sign in.
+                  Open the email and click the <strong style={{ color: '#94A3B8' }}>verification link</strong> to activate your account. Then come back here and sign in.
                 </p>
                 {resent
                   ? <p className="text-xs py-2 px-3 rounded-lg mb-4" style={{ color: '#22C55E', background: 'rgba(34,197,94,0.1)' }}>

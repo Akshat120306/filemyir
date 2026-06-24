@@ -107,16 +107,16 @@ export default function ClientLoginPage() {
     if (password !== confirm) { setError('Passwords do not match.'); return }
     setBusy(true)
     try {
-      // Gate: must have completed assessment
-      let lead, client
+      // Gate: must have completed assessment (use API route — Firestore rules block unauthenticated reads)
       try {
-        ;[lead, client] = await Promise.all([getLeadByEmail(email), getClientByEmail(email)])
+        const res = await fetch(`/api/check-lead?email=${encodeURIComponent(email)}`)
+        const data = await res.json()
+        if (!data.found) {
+          setError('No ITR assessment found for this email. Please complete the free assessment first.')
+          setBusy(false); return
+        }
       } catch {
         setError('Could not verify your email. Please check your connection and try again.')
-        setBusy(false); return
-      }
-      if (!lead && !client) {
-        setError('No ITR assessment found for this email. Please complete the free assessment first.')
         setBusy(false); return
       }
       await clientSignUp(email, password, name.trim())

@@ -13,5 +13,9 @@ export async function uploadToCloudinary(file: File): Promise<string> {
     throw new Error(err?.error?.message ?? 'Upload failed')
   }
   const data = await res.json()
-  return data.secure_url as string
+
+  // Cloudinary returns image/upload URLs for all files including PDFs.
+  // Replace with raw/upload so PDFs and docs open correctly in the browser.
+  const url: string = data.secure_url
+  return url.replace('/image/upload/', '/raw/upload/').replace('/video/upload/', '/raw/upload/')
 }

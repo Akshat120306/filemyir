@@ -556,7 +556,7 @@ function Content({ clientId }: { clientId: string }) {
                     {editingDocs
                       ? <button onClick={() => removeRequiredDoc(name)} className="text-xs px-2 py-0.5 rounded" style={{ color: '#FF8A8A', background: 'rgba(239,68,68,0.1)' }}>Remove</button>
                       : uploaded?.externalUrl
-                        ? <a href={uploaded.externalUrl?.includes('/raw/upload/') ? `/api/doc-proxy?url=${encodeURIComponent(uploaded.externalUrl)}` : uploaded.externalUrl} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#7CB0FB' }}>View</a>
+                        ? <a href={uploaded.externalUrl && /\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(uploaded.externalUrl) ? uploaded.externalUrl : `/api/doc-proxy?url=${encodeURIComponent(uploaded.externalUrl ?? '')}`} target="_blank" rel="noopener noreferrer" className="text-xs" style={{ color: '#7CB0FB' }}>View</a>
                         : null
                     }
                   </div>
@@ -606,7 +606,7 @@ function Content({ clientId }: { clientId: string }) {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <ReviewBadge status={d.reviewStatus} />
                 {d.externalUrl && (
-                  <a href={d.externalUrl.includes('/raw/upload/') ? `/api/doc-proxy?url=${encodeURIComponent(d.externalUrl)}` : d.externalUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={/\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(d.externalUrl) ? d.externalUrl : `/api/doc-proxy?url=${encodeURIComponent(d.externalUrl)}`} target="_blank" rel="noopener noreferrer">
                     <ExternalLink size={13} style={{ color: '#7CB0FB' }} />
                   </a>
                 )}

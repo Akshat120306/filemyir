@@ -12,10 +12,12 @@ import { useToast } from '@/components/ui/Toast'
 import { notifyAdmin } from '@/lib/notifications'
 import { emailAdminDocUploaded } from '@/lib/email'
 
-// Images open fine cross-origin; PDFs/raw files need server proxy to bypass CORS
+const IMAGE_EXTS = /\.(jpe?g|png|gif|webp|bmp|svg)$/i
+
+// Images open inline directly; PDFs/docs go through proxy to bypass CORS
 function docViewUrl(url: string): string {
-  if (url.includes('/raw/upload/')) return `/api/doc-proxy?url=${encodeURIComponent(url)}`
-  return url
+  if (IMAGE_EXTS.test(url)) return url
+  return `/api/doc-proxy?url=${encodeURIComponent(url)}`
 }
 
 const docTypes: { value: DocumentType; label: string }[] = [

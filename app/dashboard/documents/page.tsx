@@ -12,6 +12,12 @@ import { useToast } from '@/components/ui/Toast'
 import { notifyAdmin } from '@/lib/notifications'
 import { emailAdminDocUploaded } from '@/lib/email'
 
+// Cloudinary blocks inline PDF rendering cross-origin — force download via fl_attachment
+function docViewUrl(url: string): string {
+  if (!url.includes('cloudinary.com')) return url
+  return url.replace('/upload/', '/upload/fl_attachment/')
+}
+
 const docTypes: { value: DocumentType; label: string }[] = [
   { value: 'pan',           label: 'PAN Card' },
   { value: 'aadhaar',       label: 'Aadhaar Card' },
@@ -73,7 +79,7 @@ function UploadButton({ label, clientId, clientEmail, onDone, existingDoc }: {
         {existingDoc.reviewStatus.replace('_', ' ')}
       </span>
       {existingDoc.externalUrl && (
-        <a href={existingDoc.externalUrl} target="_blank" rel="noopener noreferrer">
+        <a href={docViewUrl(existingDoc.externalUrl)} target="_blank" rel="noopener noreferrer">
           <ExternalLink size={12} style={{ color: '#7CB0FB' }} />
         </a>
       )}
@@ -271,7 +277,7 @@ function DocsContent() {
                           {d.reviewStatus.replace('_', ' ')}
                         </span>
                         {d.externalUrl && (
-                          <a href={d.externalUrl} target="_blank" rel="noopener noreferrer"
+                          <a href={docViewUrl(d.externalUrl)} target="_blank" rel="noopener noreferrer"
                             className="text-xs underline" style={{ color: '#7CB0FB' }}>
                             View
                           </a>

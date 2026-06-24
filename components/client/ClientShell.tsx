@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, FolderOpen, CreditCard, FileText, MessageSquare, LogOut, Bell, X } from 'lucide-react'
+import { APP_VERSION } from '@/lib/version'
 import { signOut } from '@/lib/auth'
 import { useAuth } from '@/lib/AuthContext'
 import { subscribeNotifications, markAllRead } from '@/lib/notifications'
@@ -47,7 +48,10 @@ export default function ClientShell({ children }: { children: React.ReactNode })
       <aside className="hidden md:flex w-60 flex-shrink-0 flex-col" style={{ background: '#141E33', borderRight: '1px solid #1F2C42' }}>
         <div className="flex items-center gap-2.5 px-5 py-6">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm" style={{ background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' }}>T</div>
-          <span className="font-semibold text-base" style={{ color: '#F1F5F9' }}>TaxOS</span>
+          <div>
+            <p className="font-semibold text-sm leading-tight" style={{ color: '#F1F5F9' }}>FilemyITR</p>
+            <p className="text-xs" style={{ color: '#64748B' }}>v{APP_VERSION}</p>
+          </div>
         </div>
 
         <nav className="flex-1 px-3 space-y-0.5">
@@ -134,7 +138,7 @@ export default function ClientShell({ children }: { children: React.ReactNode })
           style={{ background: 'rgba(15,23,42,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #1F2C42' }}>
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-white text-xs" style={{ background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' }}>T</div>
-            <span className="font-semibold text-sm" style={{ color: '#F1F5F9' }}>TaxOS</span>
+            <span className="font-semibold text-sm" style={{ color: '#F1F5F9' }}>FilemyITR</span>
           </div>
           <div className="flex items-center gap-2">
             <div ref={notifRef} className="relative">

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, Users, GitBranch, Bell, Search, LogOut, Inbox, X, FileText, MessageSquare, User, Settings, UserPlus, CreditCard, Menu } from 'lucide-react'
+import { APP_VERSION } from '@/lib/version'
 import { signOut } from '@/lib/auth'
 import { subscribeNotifications, markAllRead } from '@/lib/notifications'
 import { Notification } from '@/types'
@@ -100,7 +101,7 @@ export default function AdminShell({ children, title, subtitle }: { children: Re
           <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm" style={{ background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' }}>T</div>
           <div>
             <p className="font-semibold text-sm" style={{ color: '#F1F5F9' }}>FilemyITR</p>
-            <p className="text-xs" style={{ color: '#64748B' }}>Admin</p>
+            <p className="text-xs" style={{ color: '#64748B' }}>Admin · v{APP_VERSION}</p>
           </div>
         </div>
         <NavLinks />

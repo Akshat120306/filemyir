@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { clientSignIn, clientSignUp, googleSignIn, signOut, resetPassword, resendVerificationEmail, updateDisplayName, linkEmailPassword } from '@/lib/auth'
@@ -44,6 +44,7 @@ export default function ClientLoginPage() {
   const [busy, setBusy]         = useState(false)
   const [resent, setResent]     = useState(false)
   const [unverifiedEmail, setUnverifiedEmail] = useState('')
+  const suppressRedirect = useRef(false) // blocks useEffect redirect during signup flow
   // google setup
   const [googleName, setGoogleName]   = useState('')
   const [googlePw, setGooglePw]       = useState('')
@@ -53,10 +54,10 @@ export default function ClientLoginPage() {
 
   useEffect(() => {
     if (!loading && user) {
+      if (suppressRedirect.current) return // signup in progress — don't redirect yet
       if (isAdmin) { router.replace('/admin'); return }
       const isGoogle = user.providerData.some(p => p.providerId === 'google.com')
       const hasPassword = user.providerData.some(p => p.providerId === 'password')
-      // Google users without a password set → show setup screen once
       if (isGoogle && !hasPassword && !googleSetupDone) {
         setGoogleName(user.displayName ?? '')
         setStep('google_setup')
@@ -126,9 +127,11 @@ export default function ClientLoginPage() {
         setError('Could not verify your email. Please check your connection and try again.')
         setBusy(false); return
       }
+      suppressRedirect.current = true // prevent useEffect from redirecting during signup
       await clientSignUp(email, password, name.trim())
       setUnverifiedEmail(email)
-      await signOut() // sign out immediately so useEffect doesn't redirect; user must verify email first
+      await signOut()
+      suppressRedirect.current = false
       setStep('verify_email')
     } catch (err: unknown) {
       if (err instanceof FirebaseError && err.code === 'auth/email-already-in-use') {

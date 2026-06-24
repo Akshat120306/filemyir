@@ -1,5 +1,5 @@
 import {
-  collection, doc, getDoc, getDocs, setDoc, updateDoc,
+  collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
   query, orderBy, where, limit, serverTimestamp, Timestamp,
 } from 'firebase/firestore'
 import { db } from './firebase'
@@ -53,6 +53,10 @@ export async function createClient(data: Omit<Client, 'id' | 'createdAt' | 'last
 
 export async function updateClient(clientId: string, data: Partial<Omit<Client, 'id'>>): Promise<void> {
   await updateDoc(doc(db, 'clients', clientId), { ...data, lastActivityAt: serverTimestamp() })
+}
+
+export async function deleteClient(clientId: string): Promise<void> {
+  await deleteDoc(doc(db, 'clients', clientId))
 }
 
 export async function updateClientStatus(clientId: string, status: PipelineStatus, changedBy: string): Promise<void> {

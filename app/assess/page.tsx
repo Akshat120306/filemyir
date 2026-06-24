@@ -196,7 +196,10 @@ export default function AssessPage() {
   // ── Contact form submit ───────────────────────────────────────────────────
   async function handleContact() {
     if (!name.trim() || !phone.trim() || !email.trim()) { setError('All fields are required'); return }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Enter a valid email'); return }
+    if (name.trim().length < 2) { setError('Enter your full name'); return }
+    const phoneDigits = phone.replace(/\D/g, '')
+    if (phoneDigits.length !== 10 || !/^[6-9]/.test(phoneDigits)) { setError('Enter a valid 10-digit Indian mobile number'); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Enter a valid email address'); return }
     setBusy(true); setError('')
     try {
       const finalAnswers = answers as AssessmentAnswers

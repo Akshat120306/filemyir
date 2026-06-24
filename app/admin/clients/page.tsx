@@ -3,10 +3,11 @@ import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import AuthGuard from '@/components/AuthGuard'
 import AdminShell from '@/components/admin/AdminShell'
-import { getAllClients } from '@/lib/clients'
+import { getAllClients, deleteClient } from '@/lib/clients'
 import { Client, PIPELINE_STAGES } from '@/types'
 import Link from 'next/link'
-import { UserPlus } from 'lucide-react'
+import { UserPlus, Trash2 } from 'lucide-react'
+import { useToast } from '@/components/ui/Toast'
 
 const statusColors: Record<string, { color: string; bg: string }> = {
   lead_created:       { color: '#94A3B8', bg: 'rgba(148,163,184,0.12)' },
@@ -24,6 +25,17 @@ function ClientsContent() {
   const [clients, setClients] = useState<Client[]>([])
   const [search, setSearch] = useState(params.get('q') ?? '')
   const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
+
+  async function handleDelete(e: React.MouseEvent, id: string, name: string) {
+    e.stopPropagation()
+    if (!confirm(`Delete client "${name}"? This cannot be undone.`)) return
+    try {
+      await deleteClient(id)
+      setClients(prev => prev.filter(c => c.id !== id))
+      toast('Client deleted')
+    } catch { toast('Failed to delete', 'error') }
+  }
 
   useEffect(() => {
     getAllClients().then(c => { setClients(c); setLoading(false) })
@@ -63,7 +75,7 @@ function ClientsContent() {
           <table className="w-full">
             <thead>
               <tr style={{ borderBottom: '1px solid #1F2C42' }}>
-                {['Client','Contact','ITR Type','Status','Fee','Last Activity'].map(h => (
+                {['Client','Contact','ITR Type','Status','Fee','Last Activity',''].map(h => (
                   <th key={h} className="px-5 py-3 text-left text-xs font-semibold uppercase" style={{ color: '#64748B', letterSpacing: '0.05em' }}>{h}</th>
                 ))}
               </tr>
@@ -111,6 +123,12 @@ function ClientsContent() {
                     </td>
                     <td className="px-5 py-4 text-xs" style={{ color: '#64748B' }}>
                       {c.lastActivityAt.toLocaleDateString('en-IN')}
+                    </td>
+                    <td className="px-5 py-4" onClick={e => handleDelete(e, c.id, c.name)}>
+                      <button className="p-1.5 rounded-lg opacity-40 hover:opacity-100 transition-opacity"
+                        style={{ background: 'rgba(239,68,68,0.08)', color: '#FF8A8A' }}>
+                        <Trash2 size={13} />
+                      </button>
                     </td>
                   </tr>
                 )

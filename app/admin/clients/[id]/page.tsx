@@ -3,11 +3,12 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import AuthGuard from '@/components/AuthGuard'
 import AdminShell from '@/components/admin/AdminShell'
-import { getClient, updateClient, updateClientStatus } from '@/lib/clients'
+import { getClient, updateClient, updateClientStatus, deleteClient } from '@/lib/clients'
 import { getDocuments, addDocument, reviewDocument, subscribeDocuments } from '@/lib/documents'
 import { getTasks, addTask, toggleTask } from '@/lib/tasks'
 import { getNotes, addNote } from '@/lib/notes'
 import { getPayments, addPayment, approvePayment, rejectPayment } from '@/lib/payments'
+import { updateLeadStatus } from '@/lib/leads'
 import { notifyClient } from '@/lib/notifications'
 import { emailClientDocApproved, emailClientDocRejected, emailClientNewMessage, emailClientPaymentApproved, emailClientPaymentRejected } from '@/lib/email'
 import { sendMessage, subscribeMessages } from '@/lib/messages'
@@ -16,7 +17,8 @@ import { uploadToCloudinary } from '@/lib/cloudinary'
 import { Client, ClientDocument, Task, Note, Payment, Message, Return, PIPELINE_STAGES, PipelineStatus, ReviewStatus, DocumentType } from '@/types'
 import { useAuth } from '@/lib/AuthContext'
 import { useToast } from '@/components/ui/Toast'
-import { CheckCircle, FileText, CreditCard, MessageSquare, Send, Check, Edit2, X, Plus, Archive, Upload, ExternalLink } from 'lucide-react'
+import { CheckCircle, FileText, CreditCard, MessageSquare, Send, Check, Edit2, X, Plus, Archive, Upload, ExternalLink, Trash2, RotateCcw } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 const tabs = ['Overview', 'Documents', 'Tasks', 'Notes', 'Payments', 'Messages', 'Returns'] as const
 type Tab = typeof tabs[number]
@@ -64,9 +66,14 @@ function EditModal({ client, onSave, onClose }: { client: Client; onSave: (d: Pa
   const { toast } = useToast()
 
   async function save() {
+    if (!form.name.trim() || form.name.trim().length < 2) { toast('Enter a valid name', 'error'); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { toast('Enter a valid email address', 'error'); return }
+    const phoneDigits = form.phone.replace(/\D/g, '')
+    if (phoneDigits.length !== 10 || !/^[6-9]/.test(phoneDigits)) { toast('Enter a valid 10-digit mobile number', 'error'); return }
+    if (form.pan && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(form.pan.toUpperCase())) { toast('PAN must be in format: ABCDE1234F', 'error'); return }
     setBusy(true)
     try {
-      await onSave({ name: form.name, phone: form.phone, email: form.email, pan: form.pan || undefined, itrType: form.itrType || undefined, feeAmount: form.feeAmount ? Number(form.feeAmount) : undefined, feeStatus: form.feeStatus })
+      await onSave({ name: form.name, phone: form.phone, email: form.email, pan: form.pan ? form.pan.toUpperCase() : undefined, itrType: form.itrType || undefined, feeAmount: form.feeAmount ? Number(form.feeAmount) : undefined, feeStatus: form.feeStatus })
       toast('Client updated'); onClose()
     } catch { toast('Failed', 'error') } finally { setBusy(false) }
   }
@@ -367,8 +374,31 @@ function Content({ clientId }: { clientId: string }) {
     catch { toast('Failed', 'error') }
   }
 
+  const router = useRouter()
+
   async function handleEditSave(data: Partial<Client>) {
     await updateClient(clientId, data); setClient(p => p ? { ...p, ...data } : p)
+  }
+
+  async function handleDeleteClient() {
+    if (!client) return
+    if (!confirm(`Delete client "${client.name}"? This cannot be undone.`)) return
+    try {
+      await deleteClient(clientId)
+      toast('Client deleted')
+      router.replace('/admin/clients')
+    } catch { toast('Failed to delete', 'error') }
+  }
+
+  async function handleRevertToLead() {
+    if (!client) return
+    if (!confirm(`Revert "${client.name}" back to lead? Their client record will be deleted.`)) return
+    try {
+      if (client.leadId) await updateLeadStatus(client.leadId, 'contacted')
+      await deleteClient(clientId)
+      toast('Reverted to lead')
+      router.replace('/admin/leads')
+    } catch { toast('Failed to revert', 'error') }
   }
 
   async function addRequiredDoc() {
@@ -432,7 +462,11 @@ function Content({ clientId }: { clientId: string }) {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold">{client.name}</h1>
-              <button onClick={() => setShowEdit(true)} className="p-1 rounded-lg" style={{ color: '#64748B' }}><Edit2 size={14} /></button>
+              <button onClick={() => setShowEdit(true)} className="p-1 rounded-lg" style={{ color: '#64748B' }} title="Edit"><Edit2 size={14} /></button>
+              {client.leadId && (
+                <button onClick={handleRevertToLead} className="p-1 rounded-lg" style={{ color: '#F59E0B' }} title="Revert to lead"><RotateCcw size={14} /></button>
+              )}
+              <button onClick={handleDeleteClient} className="p-1 rounded-lg" style={{ color: '#FF8A8A' }} title="Delete client"><Trash2 size={14} /></button>
             </div>
             <div className="flex gap-4 mt-1 flex-wrap text-sm" style={{ color: '#94A3B8' }}>
               <span>{client.phone}</span><span>{client.email}</span>

@@ -67,7 +67,10 @@ function OnboardingContent() {
 
   async function submit() {
     if (!user?.email) return
-    if (!name.trim() || !phone.trim()) { toast('Name and phone are required', 'error'); return }
+    if (!name.trim() || name.trim().length < 2) { toast('Enter your full name', 'error'); return }
+    const phoneDigits = phone.replace(/\D/g, '')
+    if (phoneDigits.length !== 10 || !/^[6-9]/.test(phoneDigits)) { toast('Enter a valid 10-digit Indian mobile number', 'error'); return }
+    if (pan && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan.toUpperCase())) { toast('PAN must be in format: ABCDE1234F', 'error'); return }
     setBusy(true)
     try {
       const existing = await getLeadByEmail(user.email)

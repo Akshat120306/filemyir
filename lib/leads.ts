@@ -1,5 +1,5 @@
 import {
-  collection, doc, getDoc, getDocs, setDoc, updateDoc,
+  collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
   query, orderBy, where, serverTimestamp, Timestamp,
 } from 'firebase/firestore'
 import { db } from './firebase'
@@ -73,4 +73,8 @@ export async function convertLeadToClient(leadId: string, clientId: string): Pro
     convertedAt: serverTimestamp(),
     convertedToClientId: clientId,
   })
+}
+
+export async function deleteLead(leadId: string): Promise<void> {
+  await deleteDoc(doc(db, 'leads', leadId))
 }

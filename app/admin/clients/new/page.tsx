@@ -86,8 +86,8 @@ function AddClientForm() {
             <input type={type} placeholder={placeholder} value={form[key as keyof typeof form]} required={required}
               onChange={e => set(key, key === 'pan' ? e.target.value.toUpperCase() : e.target.value)}
               maxLength={key === 'pan' ? 10 : undefined}
-              className="w-full rounded-xl px-4 py-2.5 text-sm outline-none font-mono"
-              style={{ background: '#141E33', border: '1px solid #2A3A55', color: '#F1F5F9', fontFamily: key === 'pan' ? 'monospace' : undefined }} />
+              className="w-full rounded-xl px-4 py-2.5 text-sm outline-none"
+              style={{ background: '#141E33', border: '1px solid #2A3A55', color: '#F1F5F9', fontFamily: key === 'pan' ? 'monospace' : 'inherit', letterSpacing: key === 'pan' ? '0.05em' : undefined }} />
             {key === 'pan' && form.pan && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(form.pan) && (
               <p className="text-xs mt-1" style={{ color: '#F59E0B' }}>Format: ABCDE1234F (5 letters · 4 digits · 1 letter)</p>
             )}

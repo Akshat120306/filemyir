@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { getLeadByEmail } from '@/lib/leads'
 import { getClientByEmail } from '@/lib/clients'
 import { FirebaseError } from 'firebase/app'
-import { Eye, EyeOff, ArrowRight, Mail, CheckCircle } from 'lucide-react'
+import { Eye, EyeOff, ArrowRight, Mail, CheckCircle, Phone, MessageCircle } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
 
 function firebaseMsg(err: unknown): string {
@@ -566,6 +566,31 @@ export default function ClientLoginPage() {
               </>
             )}
 
+          </div>
+        </div>
+
+        {/* Contact us */}
+        <div className="mt-5 p-4 rounded-2xl" style={{ background: '#141E33', border: '1px solid #1F2C42' }}>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-center" style={{ color: '#64748B' }}>Contact us</p>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg,#1E3A8A,#2563EB)', color: '#FCD34D' }}>ED</div>
+            <div>
+              <p className="text-sm font-medium leading-tight" style={{ color: '#F1F5F9' }}>Ekta Dhall</p>
+              <p className="text-xs" style={{ color: '#64748B' }}>Advocate · Ekta Tax Consultants</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <a href="tel:8585988581"
+              className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium"
+              style={{ background: 'rgba(59,130,246,0.1)', color: '#7CB0FB', border: '1px solid rgba(59,130,246,0.15)' }}>
+              <Phone size={13} /> Call
+            </a>
+            <a href="https://wa.me/918585988581" target="_blank" rel="noopener noreferrer"
+              className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium"
+              style={{ background: 'rgba(37,211,102,0.1)', color: '#25D366', border: '1px solid rgba(37,211,102,0.2)' }}>
+              <MessageCircle size={13} /> WhatsApp
+            </a>
           </div>
         </div>
 

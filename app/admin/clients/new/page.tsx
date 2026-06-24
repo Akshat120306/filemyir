@@ -28,15 +28,23 @@ function AddClientForm() {
 
   function set(k: string, v: string) { setForm(p => ({ ...p, [k]: v })) }
 
+  const [error, setError] = useState('')
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setError('')
+    if (!form.name.trim() || form.name.trim().length < 2) { setError('Enter a valid full name'); return }
+    const phoneDigits = form.phone.replace(/\D/g, '')
+    if (phoneDigits.length !== 10 || !/^[6-9]/.test(phoneDigits)) { setError('Phone must be a valid 10-digit Indian mobile number'); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { setError('Enter a valid email address'); return }
+    if (form.pan && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(form.pan.toUpperCase())) { setError('PAN must be in format: ABCDE1234F'); return }
     setBusy(true)
     try {
       const clientId = await createClient({
         name: form.name,
         phone: form.phone,
         email: form.email,
-        pan: form.pan || undefined,
+        pan: form.pan ? form.pan.toUpperCase() : undefined,
         itrType: form.itrType || undefined,
         status: 'docs_pending' as PipelineStatus,
         assignedTo: 'admin',
@@ -76,11 +84,16 @@ function AddClientForm() {
               {label}{required && <span style={{ color: '#EF4444' }}> *</span>}
             </label>
             <input type={type} placeholder={placeholder} value={form[key as keyof typeof form]} required={required}
-              onChange={e => set(key, e.target.value)}
-              className="w-full rounded-xl px-4 py-2.5 text-sm outline-none"
-              style={{ background: '#141E33', border: '1px solid #2A3A55', color: '#F1F5F9' }} />
+              onChange={e => set(key, key === 'pan' ? e.target.value.toUpperCase() : e.target.value)}
+              maxLength={key === 'pan' ? 10 : undefined}
+              className="w-full rounded-xl px-4 py-2.5 text-sm outline-none font-mono"
+              style={{ background: '#141E33', border: '1px solid #2A3A55', color: '#F1F5F9', fontFamily: key === 'pan' ? 'monospace' : undefined }} />
+            {key === 'pan' && form.pan && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(form.pan) && (
+              <p className="text-xs mt-1" style={{ color: '#F59E0B' }}>Format: ABCDE1234F (5 letters · 4 digits · 1 letter)</p>
+            )}
           </div>
         ))}
+        {error && <p className="text-xs py-2 px-3 rounded-lg" style={{ color: '#FF8A8A', background: 'rgba(239,68,68,0.1)' }}>{error}</p>}
         <div className="flex gap-3 pt-2">
           <button type="button" onClick={() => router.back()}
             className="flex-1 py-2.5 rounded-xl text-sm font-medium"

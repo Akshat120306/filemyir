@@ -12,11 +12,7 @@ import { useToast } from '@/components/ui/Toast'
 import { notifyAdmin } from '@/lib/notifications'
 import { emailAdminDocUploaded } from '@/lib/email'
 
-// Images open inline; PDFs/docs (/raw/upload/) get fl_attachment to force download
-function docViewUrl(url: string): string {
-  if (url.includes('/raw/upload/')) return url.replace('/raw/upload/', '/raw/upload/fl_attachment/')
-  return url
-}
+function docViewUrl(url: string): string { return url }
 
 const docTypes: { value: DocumentType; label: string }[] = [
   { value: 'pan',           label: 'PAN Card' },

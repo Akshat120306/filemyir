@@ -43,8 +43,8 @@ export default function ClientShell({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex min-h-screen" style={{ background: '#0F172A' }}>
-      {/* Sidebar */}
-      <aside className="w-60 flex-shrink-0 flex flex-col" style={{ background: '#141E33', borderRight: '1px solid #1F2C42' }}>
+      {/* Sidebar — desktop only */}
+      <aside className="hidden md:flex w-60 flex-shrink-0 flex-col" style={{ background: '#141E33', borderRight: '1px solid #1F2C42' }}>
         <div className="flex items-center gap-2.5 px-5 py-6">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm" style={{ background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' }}>T</div>
           <span className="font-semibold text-base" style={{ color: '#F1F5F9' }}>TaxOS</span>
@@ -128,9 +128,58 @@ export default function ClientShell({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main */}
-      <main className="flex-1 min-w-0 overflow-auto">
-        {children}
-      </main>
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* Mobile topbar */}
+        <header className="md:hidden h-14 flex items-center justify-between px-4 sticky top-0 z-40"
+          style={{ background: 'rgba(15,23,42,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #1F2C42' }}>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-white text-xs" style={{ background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' }}>T</div>
+            <span className="font-semibold text-sm" style={{ color: '#F1F5F9' }}>TaxOS</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div ref={notifRef} className="relative">
+              <button
+                onClick={() => { setShowNotifs(!showNotifs); if (!showNotifs && unread > 0 && user?.email) markAllRead(user.email) }}
+                className="relative p-2" style={{ color: '#94A3B8' }}>
+                <Bell size={18} />
+                {unread > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-white flex items-center justify-center font-bold"
+                    style={{ background: '#EF4444', fontSize: '9px' }}>
+                    {unread > 9 ? '9+' : unread}
+                  </span>
+                )}
+              </button>
+              {showNotifs && (
+                <div className="absolute right-0 mt-2 rounded-xl shadow-xl overflow-hidden z-50"
+                  style={{ background: '#1E293B', border: '1px solid #2A3A55', width: 'min(300px, calc(100vw - 32px))' }}>
+                  <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid #2A3A55' }}>
+                    <p className="text-xs font-semibold">Notifications</p>
+                    <button onClick={() => setShowNotifs(false)}><X size={13} style={{ color: '#64748B' }} /></button>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <p className="text-center py-6 text-xs" style={{ color: '#64748B' }}>No notifications</p>
+                    ) : notifications.slice(0, 10).map(n => (
+                      <div key={n.id} className="px-4 py-3"
+                        style={{ background: n.read ? 'transparent' : 'rgba(59,130,246,0.06)', borderBottom: '1px solid #1F2C42' }}>
+                        <p className="text-xs font-medium">{n.title}</p>
+                        <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{n.body}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold" style={{ background: 'rgba(139,92,246,0.2)', color: '#B6A0FA' }}>
+              {initials}
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 min-w-0 overflow-auto pb-20 md:pb-0">
+          {children}
+        </main>
+      </div>
 
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden flex justify-around py-2 pb-safe" style={{ background: '#141E33', borderTop: '1px solid #1F2C42' }}>

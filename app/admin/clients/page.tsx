@@ -70,72 +70,119 @@ function ClientsContent() {
 
       {loading ? (
         <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>
+      ) : filtered.length === 0 ? (
+        <div className="rounded-2xl py-16 text-center text-sm" style={{ background: '#1E293B', border: '1px solid #1F2C42', color: '#64748B' }}>No clients found</div>
       ) : (
-        <div className="rounded-2xl overflow-hidden" style={{ background: '#1E293B', border: '1px solid #1F2C42' }}>
-          <table className="w-full">
-            <thead>
-              <tr style={{ borderBottom: '1px solid #1F2C42' }}>
-                {['Client','Contact','ITR Type','Status','Fee','Last Activity',''].map(h => (
-                  <th key={h} className="px-5 py-3 text-left text-xs font-semibold uppercase" style={{ color: '#64748B', letterSpacing: '0.05em' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 ? (
-                <tr><td colSpan={6} className="text-center py-12 text-sm" style={{ color: '#64748B' }}>No clients found</td></tr>
-              ) : filtered.map(c => {
-                const sc = statusColors[c.status]
-                const stage = PIPELINE_STAGES.find(s => s.status === c.status)
-                return (
-                  <tr key={c.id} style={{ borderBottom: '1px solid #1F2C42', cursor: 'pointer' }}
-                    onClick={() => window.location.href = `/admin/clients/${c.id}`}
-                    className="transition-all hover:bg-white/5">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0" style={{ background: 'rgba(139,92,246,0.15)', color: '#B6A0FA' }}>
-                          {c.name.slice(0,2).toUpperCase()}
+        <>
+          {/* Desktop table */}
+          <div className="hidden md:block rounded-2xl overflow-hidden" style={{ background: '#1E293B', border: '1px solid #1F2C42' }}>
+            <table className="w-full">
+              <thead>
+                <tr style={{ borderBottom: '1px solid #1F2C42' }}>
+                  {['Client','Contact','ITR Type','Status','Fee','Last Activity',''].map(h => (
+                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold uppercase" style={{ color: '#64748B', letterSpacing: '0.05em' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(c => {
+                  const sc = statusColors[c.status]
+                  const stage = PIPELINE_STAGES.find(s => s.status === c.status)
+                  return (
+                    <tr key={c.id} style={{ borderBottom: '1px solid #1F2C42', cursor: 'pointer' }}
+                      onClick={() => window.location.href = `/admin/clients/${c.id}`}
+                      className="transition-all hover:bg-white/5">
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0" style={{ background: 'rgba(139,92,246,0.15)', color: '#B6A0FA' }}>
+                            {c.name.slice(0,2).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">{c.name}</p>
+                            {c.pan && <p className="text-xs" style={{ color: '#64748B' }}>PAN: {c.pan}</p>}
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium">{c.name}</p>
-                          {c.pan && <p className="text-xs" style={{ color: '#64748B' }}>PAN: {c.pan}</p>}
-                        </div>
+                      </td>
+                      <td className="px-5 py-4">
+                        <p className="text-sm">{c.phone}</p>
+                        <p className="text-xs" style={{ color: '#64748B' }}>{c.email}</p>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="text-sm font-semibold" style={{ color: '#7CB0FB' }}>{c.itrType ?? '—'}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: sc.bg, color: sc.color }}>
+                          {stage?.label ?? c.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        {c.feeAmount ? (
+                          <div>
+                            <p className="text-sm font-medium">₹{c.feeAmount.toLocaleString('en-IN')}</p>
+                            <p className="text-xs" style={{ color: c.feeStatus === 'paid' ? '#22C55E' : '#F59E0B' }}>{c.feeStatus ?? 'unpaid'}</p>
+                          </div>
+                        ) : <span style={{ color: '#64748B' }}>—</span>}
+                      </td>
+                      <td className="px-5 py-4 text-xs" style={{ color: '#64748B' }}>
+                        {c.lastActivityAt.toLocaleDateString('en-IN')}
+                      </td>
+                      <td className="px-5 py-4" onClick={e => handleDelete(e, c.id, c.name)}>
+                        <button className="p-1.5 rounded-lg opacity-40 hover:opacity-100 transition-opacity"
+                          style={{ background: 'rgba(239,68,68,0.08)', color: '#FF8A8A' }}>
+                          <Trash2 size={13} />
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {filtered.map(c => {
+              const sc = statusColors[c.status]
+              const stage = PIPELINE_STAGES.find(s => s.status === c.status)
+              return (
+                <div key={c.id} className="rounded-2xl p-4" style={{ background: '#1E293B', border: '1px solid #1F2C42' }}
+                  onClick={() => window.location.href = `/admin/clients/${c.id}`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0" style={{ background: 'rgba(139,92,246,0.15)', color: '#B6A0FA' }}>
+                        {c.name.slice(0,2).toUpperCase()}
                       </div>
-                    </td>
-                    <td className="px-5 py-4">
-                      <p className="text-sm">{c.phone}</p>
-                      <p className="text-xs" style={{ color: '#64748B' }}>{c.email}</p>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className="text-sm font-semibold" style={{ color: '#7CB0FB' }}>{c.itrType ?? '—'}</span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: sc.bg, color: sc.color }}>
-                        {stage?.label ?? c.status}
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold truncate">{c.name}</p>
+                        <p className="text-xs truncate" style={{ color: '#64748B' }}>{c.email}</p>
+                        {c.pan && <p className="text-xs" style={{ color: '#64748B' }}>PAN: {c.pan}</p>}
+                      </div>
+                    </div>
+                    <button className="p-2 rounded-lg flex-shrink-0"
+                      style={{ background: 'rgba(239,68,68,0.08)', color: '#FF8A8A' }}
+                      onClick={e => handleDelete(e, c.id, c.name)}>
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 mt-3">
+                    <span className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: sc.bg, color: sc.color }}>
+                      {stage?.label ?? c.status}
+                    </span>
+                    {c.itrType && (
+                      <span className="text-xs px-2 py-0.5 rounded font-semibold" style={{ background: 'rgba(59,130,246,0.1)', color: '#7CB0FB' }}>{c.itrType}</span>
+                    )}
+                    {c.feeAmount && (
+                      <span className="text-xs" style={{ color: c.feeStatus === 'paid' ? '#22C55E' : '#F59E0B' }}>
+                        ₹{c.feeAmount.toLocaleString('en-IN')} · {c.feeStatus ?? 'unpaid'}
                       </span>
-                    </td>
-                    <td className="px-5 py-4">
-                      {c.feeAmount ? (
-                        <div>
-                          <p className="text-sm font-medium">₹{c.feeAmount.toLocaleString('en-IN')}</p>
-                          <p className="text-xs" style={{ color: c.feeStatus === 'paid' ? '#22C55E' : '#F59E0B' }}>{c.feeStatus ?? 'unpaid'}</p>
-                        </div>
-                      ) : <span style={{ color: '#64748B' }}>—</span>}
-                    </td>
-                    <td className="px-5 py-4 text-xs" style={{ color: '#64748B' }}>
-                      {c.lastActivityAt.toLocaleDateString('en-IN')}
-                    </td>
-                    <td className="px-5 py-4" onClick={e => handleDelete(e, c.id, c.name)}>
-                      <button className="p-1.5 rounded-lg opacity-40 hover:opacity-100 transition-opacity"
-                        style={{ background: 'rgba(239,68,68,0.08)', color: '#FF8A8A' }}>
-                        <Trash2 size={13} />
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+                    )}
+                  </div>
+                  <p className="text-xs mt-2" style={{ color: '#475569' }}>{c.phone} · {c.lastActivityAt.toLocaleDateString('en-IN')}</p>
+                </div>
+              )
+            })}
+          </div>
+        </>
       )}
     </div>
   )

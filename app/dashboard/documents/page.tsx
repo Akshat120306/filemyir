@@ -12,8 +12,6 @@ import { useToast } from '@/components/ui/Toast'
 import { notifyAdmin } from '@/lib/notifications'
 import { emailAdminDocUploaded } from '@/lib/email'
 
-const IMAGE_EXTS = /\.(jpe?g|png|gif|webp|bmp|svg)$/i
-function isImage(url: string) { return IMAGE_EXTS.test(url) }
 
 const docTypes: { value: DocumentType; label: string }[] = [
   { value: 'pan',           label: 'PAN Card' },
@@ -76,9 +74,9 @@ function UploadButton({ label, clientId, clientEmail, onDone, existingDoc }: {
         {existingDoc.reviewStatus.replace('_', ' ')}
       </span>
       {existingDoc.externalUrl && (
-        isImage(existingDoc.externalUrl)
-          ? <a href={existingDoc.externalUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={12} style={{ color: '#7CB0FB' }} /></a>
-          : <span className="text-xs" style={{ color: '#64748B' }} title="PDF viewing is not supported. Please ask your consultant for a copy.">PDF uploaded ✓</span>
+        <a href={existingDoc.externalUrl} target="_blank" rel="noopener noreferrer">
+          <ExternalLink size={12} style={{ color: '#7CB0FB' }} />
+        </a>
       )}
     </div>
   )
@@ -275,9 +273,7 @@ function DocsContent() {
                           {d.reviewStatus.replace('_', ' ')}
                         </span>
                         {d.externalUrl && (
-                          isImage(d.externalUrl)
-                            ? <a href={d.externalUrl} target="_blank" rel="noopener noreferrer" className="text-xs underline" style={{ color: '#7CB0FB' }}>View</a>
-                            : <span className="text-xs" style={{ color: '#64748B' }}>PDF uploaded ✓</span>
+                          <a href={d.externalUrl} target="_blank" rel="noopener noreferrer" className="text-xs underline" style={{ color: '#7CB0FB' }}>View</a>
                         )}
                         {d.uploadedBy === 'client' && clientId && (
                           <button onClick={async () => {

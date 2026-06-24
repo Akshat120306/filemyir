@@ -13,12 +13,7 @@ import { notifyAdmin } from '@/lib/notifications'
 import { emailAdminDocUploaded } from '@/lib/email'
 
 const IMAGE_EXTS = /\.(jpe?g|png|gif|webp|bmp|svg)$/i
-
-// Images open inline directly; PDFs/docs go through proxy to bypass CORS
-function docViewUrl(url: string): string {
-  if (IMAGE_EXTS.test(url)) return url
-  return `/api/doc-proxy?url=${encodeURIComponent(url)}`
-}
+function isImage(url: string) { return IMAGE_EXTS.test(url) }
 
 const docTypes: { value: DocumentType; label: string }[] = [
   { value: 'pan',           label: 'PAN Card' },
@@ -81,9 +76,9 @@ function UploadButton({ label, clientId, clientEmail, onDone, existingDoc }: {
         {existingDoc.reviewStatus.replace('_', ' ')}
       </span>
       {existingDoc.externalUrl && (
-        <a href={docViewUrl(existingDoc.externalUrl)} target="_blank" rel="noopener noreferrer">
-          <ExternalLink size={12} style={{ color: '#7CB0FB' }} />
-        </a>
+        isImage(existingDoc.externalUrl)
+          ? <a href={existingDoc.externalUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={12} style={{ color: '#7CB0FB' }} /></a>
+          : <span className="text-xs" style={{ color: '#64748B' }} title="PDF viewing is not supported. Please ask your consultant for a copy.">PDF uploaded ✓</span>
       )}
     </div>
   )
@@ -280,10 +275,9 @@ function DocsContent() {
                           {d.reviewStatus.replace('_', ' ')}
                         </span>
                         {d.externalUrl && (
-                          <a href={docViewUrl(d.externalUrl)} target="_blank" rel="noopener noreferrer"
-                            className="text-xs underline" style={{ color: '#7CB0FB' }}>
-                            View
-                          </a>
+                          isImage(d.externalUrl)
+                            ? <a href={d.externalUrl} target="_blank" rel="noopener noreferrer" className="text-xs underline" style={{ color: '#7CB0FB' }}>View</a>
+                            : <span className="text-xs" style={{ color: '#64748B' }}>PDF uploaded ✓</span>
                         )}
                         {d.uploadedBy === 'client' && clientId && (
                           <button onClick={async () => {

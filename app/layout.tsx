@@ -4,7 +4,7 @@ import { AuthProvider } from '@/lib/AuthContext'
 import { ToastProvider } from '@/components/ui/Toast'
 
 export const metadata: Metadata = {
-  title: 'TaxOS — Income Tax Filing Portal',
+  title: 'FilemyITR — Income Tax Filing Portal',
   description: 'Modern income tax filing for Indian taxpayers',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
 }

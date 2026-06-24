@@ -5,7 +5,7 @@ import ClientShell from '@/components/client/ClientShell'
 import { useAuth } from '@/lib/AuthContext'
 import { getClientByEmail } from '@/lib/clients'
 import { subscribeDocuments, addDocument, deleteDocument } from '@/lib/documents'
-import { uploadToCloudinary } from '@/lib/cloudinary'
+import { uploadToCloudinary, deleteFromCloudinary } from '@/lib/cloudinary'
 import { Client, ClientDocument, DocumentType } from '@/types'
 import { FileText, Upload, CheckCircle, Clock, XCircle, AlertCircle, ExternalLink, Trash2 } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
@@ -225,6 +225,7 @@ function DocsContent() {
                         {uploaded && uploaded.uploadedBy === 'client' && clientId && (
                           <button onClick={async () => {
                             if (!confirm('Remove this document?')) return
+                            if (uploaded.externalUrl) await deleteFromCloudinary(uploaded.externalUrl)
                             await deleteDocument(clientId, uploaded.id)
                             toast('Document removed')
                           }} style={{ color: '#64748B' }} title="Remove">
@@ -281,6 +282,7 @@ function DocsContent() {
                         {d.uploadedBy === 'client' && clientId && (
                           <button onClick={async () => {
                             if (!confirm('Remove this document?')) return
+                            if (d.externalUrl) await deleteFromCloudinary(d.externalUrl)
                             await deleteDocument(clientId, d.id)
                             toast('Document removed')
                           }} style={{ color: '#64748B' }} title="Remove">

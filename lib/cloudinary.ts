@@ -1,5 +1,13 @@
 const IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/bmp']
 
+export async function deleteFromCloudinary(url: string): Promise<void> {
+  await fetch('/api/cloudinary/delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url }),
+  })
+}
+
 export async function uploadToCloudinary(file: File): Promise<string> {
   const isImage = IMAGE_TYPES.includes(file.type)
   // Images → /image/upload, everything else (PDF, doc, etc) → /raw/upload

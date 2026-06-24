@@ -9,7 +9,7 @@ import { getLeadByEmail } from '@/lib/leads'
 import { getDocuments } from '@/lib/documents'
 import { getPayments } from '@/lib/payments'
 import { Client, ClientDocument, Payment, PIPELINE_STAGES } from '@/types'
-import { CheckCircle, Clock, Upload, CreditCard, FileText } from 'lucide-react'
+import { CheckCircle, Clock, Upload, CreditCard, FileText, Phone, MessageCircle } from 'lucide-react'
 
 function StatusTimeline({ status }: { status: Client['status'] }) {
   const currentIdx = PIPELINE_STAGES.findIndex(s => s.status === status)
@@ -124,6 +124,37 @@ function DashboardContent() {
               </div>
             ))}
           </div>
+
+          {/* Contact consultant */}
+          {(() => {
+            const clientName = user?.displayName ?? user?.email?.split('@')[0] ?? ''
+            const waMsg = encodeURIComponent(`Hi Ekta ma'am, I'm ${clientName}. I have a query regarding my ITR filing. Could you please help me?`)
+            return (
+              <div className="mb-6 p-4 md:p-5 rounded-2xl flex flex-col md:flex-row md:items-center gap-4 md:gap-6"
+                style={{ background: '#1E293B', border: '1px solid #1F2C42' }}>
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0"
+                    style={{ background: 'linear-gradient(135deg,#1E3A8A,#2563EB)', color: '#FCD34D' }}>ED</div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Ekta Dhall</p>
+                    <p className="text-xs" style={{ color: '#64748B' }}>Advocate · Ekta Tax Consultants</p>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <a href="tel:8585988581"
+                    className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium"
+                    style={{ background: 'rgba(59,130,246,0.12)', color: '#7CB0FB', border: '1px solid rgba(59,130,246,0.18)' }}>
+                    <Phone size={14} /> Call
+                  </a>
+                  <a href={`https://wa.me/918585988581?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
+                    className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium"
+                    style={{ background: 'rgba(37,211,102,0.1)', color: '#25D366', border: '1px solid rgba(37,211,102,0.2)' }}>
+                    <MessageCircle size={14} /> WhatsApp
+                  </a>
+                </div>
+              </div>
+            )
+          })()}
 
           <div className="grid md:grid-cols-2 gap-5">
             <div className="p-5 rounded-2xl" style={{ background: '#1E293B', border: '1px solid #1F2C42' }}>

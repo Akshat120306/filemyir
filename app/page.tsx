@@ -22,7 +22,6 @@ export default function HomePage() {
   ]
 
   const trustPoints = [
-    { icon: Shield, text: 'ICAI Registered Advocate' },
     { icon: Award,  text: '10+ Years Experience' },
     { icon: CheckCircle, text: '100% Secure & Confidential' },
   ]

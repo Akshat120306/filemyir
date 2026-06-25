@@ -199,6 +199,11 @@ export default function ClientShell({ children }: { children: React.ReactNode })
             </Link>
           )
         })}
+        <button onClick={async () => { await signOut(); router.replace('/login') }}
+          className="flex flex-col items-center gap-1 px-3 py-1">
+          <LogOut size={20} style={{ color: '#64748B' }} />
+          <span className="text-xs" style={{ color: '#64748B' }}>Sign out</span>
+        </button>
       </nav>
     </div>
   )

@@ -172,11 +172,15 @@ function PaymentsContent() {
                   </div>
                   <CopyButton value={settings.upiId} />
                 </div>
-                <a href={`upi://pay?pa=${encodeURIComponent(settings.upiId)}&pn=${encodeURIComponent(settings.upiName)}&am=${remaining}&cu=INR`}
+                <button
+                  onClick={() => {
+                    const upiUrl = `upi://pay?pa=${encodeURIComponent(settings.upiId)}&pn=${encodeURIComponent(settings.upiName ?? '')}&am=${remaining}&cu=INR&tn=ITR+Filing+Fee`
+                    window.location.href = upiUrl
+                  }}
                   className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-medium"
                   style={{ background: 'rgba(59,130,246,0.12)', color: '#7CB0FB', border: '1px solid rgba(59,130,246,0.2)' }}>
-                  Open in UPI App
-                </a>
+                  Pay ₹{remaining.toLocaleString('en-IN')} via UPI App
+                </button>
               </div>
             ) : (
               <div className="mb-5 space-y-2">

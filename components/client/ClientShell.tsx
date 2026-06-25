@@ -171,6 +171,9 @@ export default function ClientShell({ children }: { children: React.ReactNode })
             <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold" style={{ background: 'rgba(139,92,246,0.2)', color: '#B6A0FA' }}>
               {initials}
             </div>
+            <button onClick={async () => { await signOut(); router.replace('/login') }} className="p-2" style={{ color: '#64748B' }}>
+              <LogOut size={18} />
+            </button>
           </div>
         </header>
 
@@ -199,11 +202,6 @@ export default function ClientShell({ children }: { children: React.ReactNode })
             </Link>
           )
         })}
-        <button onClick={async () => { await signOut(); router.replace('/login') }}
-          className="flex flex-col items-center gap-1 px-3 py-1">
-          <LogOut size={20} style={{ color: '#64748B' }} />
-          <span className="text-xs" style={{ color: '#64748B' }}>Sign out</span>
-        </button>
       </nav>
     </div>
   )
